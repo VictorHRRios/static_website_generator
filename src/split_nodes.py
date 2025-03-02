@@ -42,8 +42,8 @@ def split_nodes_image(old_nodes):
                 new_nodes.append(TextNode(new_node[0], TextType.TEXT))
             new_nodes.append(TextNode(image_alt, TextType.IMAGES, image_link))
             original_text = new_node[1]
-    if original_text != "":
-        new_nodes.append(TextNode(original_text, TextType.TEXT))
+        if original_text != "":
+            new_nodes.append(TextNode(original_text, TextType.TEXT))
     return new_nodes
 
 def split_nodes_link(old_nodes):

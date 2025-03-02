@@ -61,11 +61,16 @@ def block_to_html_node(block, block_type):
     #nodes = [TextNode(block, TextType.TEXT)]
     match block_type:
         case BlockType.HEADING:
-            return []
+            heading_number = type_of_heading(block)
+            html_nodes = text_to_children(block[heading_number+1:].replace('\n', ' ')) # Remove new lines and handle inline
+            block_node = ParentNode(f"h{heading_number}", html_nodes)
+            return block_node
         case BlockType.CODE:
             return [LeafNode('code', block[4:-3])]
         case BlockType.QUOTE:
-            return []
+            html_nodes = text_to_children(block.replace('> ', '').replace('\n', ' ')) # Remove new lines and handle inline
+            block_node = ParentNode(f"blockquote", html_nodes)
+            return block_node
         case BlockType.UNORDERED_LIST:
             lines = block.split('\n')
             unordered_list = []
@@ -93,30 +98,30 @@ def markdown_to_html_node(markdown):
     blocks_nodes = []
     for block in blocks:
         block_type = block_to_block_type(block)
-        if block_type == BlockType.HEADING:
-            heading_number = type_of_heading(block)
-            block_node = ParentNode(f"h{heading_number}", None)
-        else:
+        print(block_type)
+        if block_type != BlockType.HEADING and block_type != BlockType.QUOTE:
             block_node = ParentNode(block_type.value, None)
-        block_parent_nodes = block_to_html_node(block, block_type)
-        # if it is a paragraph or a quote
-        if block_parent_nodes == []:
-            if block_type == BlockType.QUOTE:
-                html_nodes = text_to_children(block.replace('> ', '').replace('\n', ' ')) # Remove new lines and handle inline
-            elif block_type == BlockType.HEADING:
-                html_nodes = text_to_children(block[heading_number+1:].replace('\n', ' ')) # Remove new lines and handle inline
+            block_parent_nodes = block_to_html_node(block, block_type)
+            # if it is a paragraph or a quote
+            if block_parent_nodes == []:
+                if block_type == BlockType.QUOTE:
+                    html_nodes = text_to_children(block.replace('> ', '').replace('\n', ' ')) # Remove new lines and handle inline
+                else:
+                    html_nodes = text_to_children(block.replace('\n', ' ')) # Remove new lines and handle inline
+                block_node.children = html_nodes
             else:
-                html_nodes = text_to_children(block.replace('\n', ' ')) # Remove new lines and handle inline
-            block_node.children = html_nodes
+                if block_type == BlockType.CODE:
+                    block_parent_nodes = block_to_html_node(block, block_type) # Handle as final leaf node
+                else:
+                    for block_parent_node in block_parent_nodes:
+                        html_nodes = text_to_children(block_parent_node.value) # Attach inline to every other type
+                        print("html nodes = ")
+                        block_parent_node.children = html_nodes
+                block_node.children = block_parent_nodes
         else:
-            if block_type == BlockType.CODE:
-                block_parent_nodes = block_to_html_node(block, block_type) # Handle as final leaf node
-            else:
-                for block_parent_node in block_parent_nodes:
-                    html_nodes = text_to_children(block_parent_node.value) # Attach inline to every other type
-                    block_parent_node.children = html_nodes
-            block_node.children = block_parent_nodes
+            block_node = block_to_html_node(block, block_type)
         blocks_nodes.append(block_node)
+        block_parent_node = block_to_html_node(block, block_type)
     parent = ParentNode("div", blocks_nodes)
     return parent
 

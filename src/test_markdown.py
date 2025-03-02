@@ -65,7 +65,7 @@ class TestTextNode(unittest.TestCase):
 
     def test_quote(self):
             md = """
-        > title
+        > **title**
         > paragraph
         > other
         """
@@ -74,12 +74,12 @@ class TestTextNode(unittest.TestCase):
             html = node.to_html()
             self.assertEqual(
                 html,
-                "<div><blockquote>title paragraph other</blockquote></div>",
+                "<div><blockquote><b>title</b> paragraph other</blockquote></div>",
             )
 
     def test_heading(self):
             md = """
-        ## title
+        ## **title**
 
         # paragraph
 
@@ -88,7 +88,8 @@ class TestTextNode(unittest.TestCase):
 
             node = markdown_to_html_node(md)
             html = node.to_html()
+            print(f"html = {html}")
             self.assertEqual(
                 html,
-                "<div><h2>title</h2><h1>paragraph</h1><h3>other</h3></div>"
+                "<div><h2><b>title</b></h2><h1>paragraph</h1><h3>other</h3></div>"
             )
