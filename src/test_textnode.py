@@ -1,7 +1,8 @@
 import unittest
 
-from textnode import TextNode, TextType, BlockType
-from split_nodes import split_nodes_delimiter, split_nodes_image, split_nodes_link, markdown_to_blocks, block_to_block_type
+from textnode import TextNode, TextType
+from split_nodes import split_nodes_delimiter, split_nodes_image, split_nodes_link
+from markdown import markdown_to_blocks, block_to_block_type, BlockType
 
 
 class TestTextNode(unittest.TestCase):

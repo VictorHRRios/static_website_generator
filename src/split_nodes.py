@@ -1,4 +1,4 @@
-from textnode import TextNode, TextType, BlockType
+from textnode import TextNode, TextType
 from extract import extract_markdown_links, extract_markdown_images
 import re
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
@@ -31,6 +31,7 @@ def split_nodes_image(old_nodes):
         images = extract_markdown_images(original_text)
         if images == []:
             new_nodes.append(old_node)
+            original_text = ''
             continue
         for image in images:
             image_alt, image_link = image
@@ -77,49 +78,3 @@ def text_to_textnodes(text):
     nodes = split_nodes_image(nodes)
     nodes = split_nodes_link(nodes)
     return nodes
-
-
-def markdown_to_blocks(markdown):
-    blocks = markdown.split('\n\n')
-    blocks = list(filter(lambda block: block != '', map(lambda block: "\n".join(map(lambda line: line.strip(), block.strip().strip('\n').split('\n'))), blocks)))
-    return blocks
-
-def isHeading(block):
-    return re.match(r"^#{1,6} w*",block)
-
-def isCode(block):
-    return block[:3] == "```" and block[-3:] == "```"
-
-def isQuote(block):
-    lines = block.split('\n')
-    for line in lines:
-        if line[0] != '>':
-            return False
-    return True
-
-def isUnOrderedList(block):
-    lines = block.split('\n')
-    for line in lines:
-        if line[:2] != '- ':
-            return False
-    return True
-
-def isOrderedList(block):
-    lines = block.split('\n')
-    for line in range(1, len(lines)+1):
-        if lines[line-1][:3] != f"{line}. ":
-            return False
-    return True
-
-def block_to_block_type(block):
-    if isHeading(block):
-        return BlockType.HEADING
-    elif isCode(block):
-        return BlockType.CODE
-    elif isQuote(block):
-        return BlockType.QUOTE
-    elif isUnOrderedList(block):
-        return BlockType.UNORDERED_LIST
-    elif isOrderedList(block):
-        return BlockType.ORDERED_LIST
-    return BlockType.PARAGRAPH
