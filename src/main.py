@@ -27,8 +27,8 @@ def generate_page(from_path, template_path, dest_path, base_path):
     title_str = extract_title(md_content)
     template_content = template_content.replace("{{ Title }}", title_str)
     template_content = template_content.replace("{{ Content }}", html_str)
-    template_content = template_content.replace("href=/", f"href={base_path}")
-    template_content = template_content.replace("src=/", f"src={base_path}")
+    template_content = template_content.replace('href="/', f'href="{base_path}')
+    template_content = template_content.replace('src="/', f'src="{base_path}')
     with open(dest_path, "w") as text_file:
         text_file.write(template_content)
 
@@ -62,7 +62,6 @@ def main():
     else:
         base_path = sys.argv[1] 
 
-    #sample = TextNode("this is a text node", TextType.BOLD, 'https://www.boot.dev')
     copy_contents("static", "docs")
     generate_pages_recursive("content", 'template.html', 'docs', base_path)
     
