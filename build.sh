@@ -1,1 +1,1 @@
-python3 src/main.py "/VHRRios/"
+python3 src/main.py "/static_website_generator/"
