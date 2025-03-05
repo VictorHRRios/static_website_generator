@@ -1,8 +1,8 @@
-from textnode import *
 import os
 import shutil
 from markdown import markdown_to_html_node
 import sys
+
 
 def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, base_path):
     if not os.path.exists(dir_path_content):
@@ -12,13 +12,17 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, bas
         source_file = os.path.join(dir_path_content, file)
         destination_file = os.path.join(dest_dir_path, file)
         if os.path.isfile(source_file):
-            generate_page(source_file, template_path, destination_file.replace('.md', '.html'), base_path) #change extension to html
+            generate_page(source_file, template_path, destination_file.replace(
+                '.md', '.html'), base_path)  # change extension to html
         else:
             os.mkdir(destination_file)
-            generate_pages_recursive(source_file, template_path, destination_file, base_path)
+            generate_pages_recursive(
+                source_file, template_path, destination_file, base_path)
+
 
 def generate_page(from_path, template_path, dest_path, base_path):
-    print(f"generating page from {from_path} to {dest_path} using {template_path}")
+    print(f"generating page from {from_path} to {
+          dest_path} using {template_path}")
     with open(from_path, 'r') as file:
         md_content = file.read()
     with open(template_path, 'r') as file:
@@ -27,10 +31,12 @@ def generate_page(from_path, template_path, dest_path, base_path):
     title_str = extract_title(md_content)
     template_content = template_content.replace("{{ Title }}", title_str)
     template_content = template_content.replace("{{ Content }}", html_str)
-    template_content = template_content.replace('href="/', f'href="{base_path}')
+    template_content = template_content.replace(
+        'href="/', f'href="{base_path}')
     template_content = template_content.replace('src="/', f'src="{base_path}')
     with open(dest_path, "w") as text_file:
         text_file.write(template_content)
+
 
 def copy_contents(source, destination):
     if not os.path.exists(source):
@@ -48,24 +54,24 @@ def copy_contents(source, destination):
             os.mkdir(destination_file)
             copy_contents(source_file, destination_file)
 
+
 def extract_title(markdown):
     lines = markdown.split('\n')
     for line in lines:
         if line[:2] == "# ":
             return line[2:]
     raise Exception("No header")
-    
+
+
 def main():
     if len(sys.argv) != 2:
         print("Path not included defaulting to '/'")
         base_path = '/'
     else:
-        base_path = sys.argv[1] 
-
+        base_path = sys.argv[1]
     copy_contents("static", "docs")
     generate_pages_recursive("content", 'template.html', 'docs', base_path)
-    
-    
+
 
 if __name__ == "__main__":
     main()
