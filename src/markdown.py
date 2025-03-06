@@ -69,8 +69,12 @@ def block_to_html_node(block, block_type):
             block_node = ParentNode(block_type.value, [LeafNode('code', block[4:-3])])
             return block_node
         case BlockType.QUOTE:
-            html_nodes = text_to_children(block.replace('> ', '').replace('\n', ' ')) # Remove new lines and handle inline
-            block_node = ParentNode(f"blockquote", html_nodes)
+            lines = block.split('\n')
+            pars = []
+            for line in lines:
+                inline = text_to_children(line[1:].lstrip())
+                pars.append(ParentNode('p', inline))
+            block_node = ParentNode(block_type.value, pars)
             return block_node
         case BlockType.UNORDERED_LIST:
             lines = block.split('\n')
@@ -88,7 +92,7 @@ def block_to_html_node(block, block_type):
                 ordered_list.append(ParentNode('li', inline))
             block_node = ParentNode(block_type.value, ordered_list)
             return block_node
-        case BlockType.PARAGRAPH:
+        case _:
             html_nodes = text_to_children(block.replace('\n', ' ')) # Remove new lines and handle inline
             block_node = ParentNode(BlockType.PARAGRAPH.value, html_nodes)
             return block_node
