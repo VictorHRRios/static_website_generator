@@ -21,8 +21,7 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, bas
 
 
 def generate_page(from_path, template_path, dest_path, base_path):
-    print(f"generating page from {from_path} to {
-          dest_path} using {template_path}")
+    print(f"generating page from {from_path} to {dest_path} using {template_path}")
     with open(from_path, 'r') as file:
         md_content = file.read()
     with open(template_path, 'r') as file:
